@@ -206,9 +206,15 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Entities\Item.cs" />
+    <Compile Include="Entities\ItemType.cs" />
+    <Compile Include="Entities\Product.cs" />
+    <Compile Include="Entities\Part.cs" />
+    <Compile Include="Entities\Section.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -286,7 +292,6 @@
     <Folder Include="Content\Documents\" />
     <Folder Include="Content\Images\" />
     <Folder Include="Content\Logos\" />
-    <Folder Include="Entities\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

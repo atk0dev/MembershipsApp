@@ -11,8 +11,8 @@ namespace Memberships.Migrations
         {
             
             // set to false on production
-            AutomaticMigrationsEnabled = true;
-            AutomaticMigrationDataLossAllowed = true;
+            this.AutomaticMigrationsEnabled = true;
+            this.AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(Memberships.Models.ApplicationDbContext context)

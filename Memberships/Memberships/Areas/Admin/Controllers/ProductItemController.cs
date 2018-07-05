@@ -12,6 +12,7 @@ using Memberships.Models;
 
 namespace Memberships.Areas.Admin.Controllers
 {
+    using Memberships.Areas.Admin.Extensions;
     using Memberships.Areas.Admin.Models;
 
     public class ProductItemController : Controller
@@ -21,22 +22,23 @@ namespace Memberships.Areas.Admin.Controllers
         // GET: Admin/ProductItem
         public async Task<ActionResult> Index()
         {
-            return this.View(await this.db.ProductItems.ToListAsync());
+            return this.View(await this.db.ProductItems.Convert(this.db));
         }
 
         // GET: Admin/ProductItem/Details/5
-        public async Task<ActionResult> Details(int? id)
+        public async Task<ActionResult> Details(int? itemId, int? productId)
         {
-            if (id == null)
+            if (itemId == null || productId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ProductItem productItem = await db.ProductItems.FindAsync(id);
+
+            ProductItem productItem = await this.GetProductItem(itemId, productId);
             if (productItem == null)
             {
-                return HttpNotFound();
+                return this.HttpNotFound();
             }
-            return View(productItem);
+            return this.View(await productItem.Convert(this.db));
         }
 
         // GET: Admin/ProductItem/Create
@@ -69,18 +71,18 @@ namespace Memberships.Areas.Admin.Controllers
         }
 
         // GET: Admin/ProductItem/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> Edit(int? itemId, int? productId)
         {
-            if (id == null)
+            if (itemId == null || productId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ProductItem productItem = await db.ProductItems.FindAsync(id);
+            ProductItem productItem = await this.GetProductItem(itemId, productId);
             if (productItem == null)
             {
-                return HttpNotFound();
+                return this.HttpNotFound();
             }
-            return View(productItem);
+            return this.View(await productItem.Convert(this.db));
         }
 
         // POST: Admin/ProductItem/Edit/5
@@ -88,41 +90,68 @@ namespace Memberships.Areas.Admin.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "ProductId,ItemId")] ProductItem productItem)
+        public async Task<ActionResult> Edit([Bind(Include = "ProductId,ItemId,OldProductId,OldItemId")] ProductItem productItem)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                db.Entry(productItem).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+                var canChange = await productItem.CanChange(this.db);
+                if (canChange)
+                {
+                    await productItem.Change(this.db);
+                }
+
+                return this.RedirectToAction("Index");
             }
-            return View(productItem);
+            return this.View(await productItem.Convert(this.db));
         }
 
         // GET: Admin/ProductItem/Delete/5
-        public async Task<ActionResult> Delete(int? id)
+        public async Task<ActionResult> Delete(int? itemId, int? productId)
         {
-            if (id == null)
+            if (itemId == null || productId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ProductItem productItem = await db.ProductItems.FindAsync(id);
+
+            ProductItem productItem = await this.GetProductItem(itemId, productId);
             if (productItem == null)
             {
-                return HttpNotFound();
+                return this.HttpNotFound();
             }
-            return View(productItem);
+            return this.View(await productItem.Convert(this.db));
         }
 
         // POST: Admin/ProductItem/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
+        public async Task<ActionResult> DeleteConfirmed(int itemId, int productId)
         {
-            ProductItem productItem = await db.ProductItems.FindAsync(id);
-            db.ProductItems.Remove(productItem);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            ProductItem productItem = await this.GetProductItem(itemId, productId);
+            this.db.ProductItems.Remove(productItem);
+            await this.db.SaveChangesAsync();
+            return this.RedirectToAction("Index");
+        }
+
+        private async Task<ProductItem> GetProductItem(int? itemId, int? productId)
+        {
+            try
+            {
+                int itmId = 0;
+                int prdId = 0;
+
+                int.TryParse(itemId.ToString(), out itmId);
+                int.TryParse(productId.ToString(), out prdId);
+
+                var productItem =
+                    await this.db.ProductItems.FirstOrDefaultAsync(
+                        pi => pi.ProductId.Equals(prdId) && pi.ItemId.Equals(itmId));
+
+                return productItem;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         protected override void Dispose(bool disposing)

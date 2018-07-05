@@ -7,6 +7,8 @@ using System.Web;
 
 namespace Memberships.Entities
 {
+    using System.ComponentModel;
+
     [Table("Subscription")]
     public class Subscription
     {
@@ -20,6 +22,7 @@ namespace Memberships.Entities
         [MaxLength(2048)]
         public string Description { get; set; }
 
+        [DisplayName("Registration Code")]
         [MaxLength(20)]
         public string RegistrationCode { get; set; }
     }

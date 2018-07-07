@@ -15,6 +15,8 @@ namespace Memberships.Areas.Admin.Extensions
 
     public static class ConversionExtensions
     {
+        #region Product
+
         public static async Task<IEnumerable<ProductModel>> Convert(
             this IEnumerable<Product> products,
             ApplicationDbContext db)
@@ -65,6 +67,10 @@ namespace Memberships.Areas.Admin.Extensions
             return model;
         }
 
+        #endregion
+        
+        #region ProductItem
+        
         public static async Task<IEnumerable<ProductItemModel>> Convert(
             this IQueryable<ProductItem> productItems,
             ApplicationDbContext db)
@@ -94,13 +100,13 @@ namespace Memberships.Areas.Admin.Extensions
                             ItemId = productItem.ItemId,
                             Items = addListData ? await db.Items.ToListAsync() : null,
                             Products = addListData ? await db.Products.ToListAsync() : null,
-                            ItemTitle = (await db.Items.FirstOrDefaultAsync(i => i.Id.Equals(productItem.ItemId))).Title,
-                            ProductTitle = (await db.Products.FirstOrDefaultAsync(p => p.Id.Equals(productItem.ProductId))).Title
+                            ItemTitle = (await db.Items.FirstOrDefaultAsync(i => i.Id.Equals(productItem.ItemId)))?.Title,
+                            ProductTitle = (await db.Products.FirstOrDefaultAsync(p => p.Id.Equals(productItem.ProductId)))?.Title
                         };
 
             return model;
         }
-
+        
         public static async Task<bool> CanChange(this ProductItem productItem, ApplicationDbContext db)
         {
             var oldPi = await db.ProductItems.CountAsync(
@@ -143,5 +149,91 @@ namespace Memberships.Areas.Admin.Extensions
                 }
             }
         }
+
+        #endregion
+
+        #region SubscriptionProduct
+
+        public static async Task<IEnumerable<SubscriptionProductModel>> Convert(
+            this IQueryable<SubscriptionProduct> subscriptionProducts,
+            ApplicationDbContext db)
+        {
+            if (subscriptionProducts != null && !subscriptionProducts.Any())
+            {
+                return new List<SubscriptionProductModel>();
+            }
+
+            return await (from pi in subscriptionProducts
+                          select new SubscriptionProductModel
+                          {
+                              SubscriptionId = pi.SubscriptionId,
+                              ProductId = pi.ProductId,
+                              SubscriptionTitle = db.Subscriptions.FirstOrDefault(i => i.Id.Equals(pi.SubscriptionId)).Title,
+                              ProductTitle = db.Products.FirstOrDefault(i => i.Id.Equals(pi.ProductId)).Title,
+                          }).ToListAsync();
+        }
+
+        public static async Task<SubscriptionProductModel> Convert(
+            this SubscriptionProduct subscriptionProduct,
+            ApplicationDbContext db, bool addListData = true)
+        {
+            var model = new SubscriptionProductModel
+            {
+                ProductId = subscriptionProduct.ProductId,
+                SubscriptionId = subscriptionProduct.SubscriptionId,
+                Subscriptions = addListData ? await db.Subscriptions.ToListAsync() : null,
+                Products = addListData ? await db.Products.ToListAsync() : null,
+                SubscriptionTitle = (await db.Subscriptions.FirstOrDefaultAsync(i => i.Id.Equals(subscriptionProduct.SubscriptionId)))?.Title,
+                ProductTitle = (await db.Products.FirstOrDefaultAsync(p => p.Id.Equals(subscriptionProduct.ProductId)))?.Title
+            };
+
+            return model;
+        }
+
+        public static async Task<bool> CanChange(this SubscriptionProduct subscriptionProduct, ApplicationDbContext db)
+        {
+            var oldSp = await db.SubscriptionProducts.CountAsync(
+                sp => sp.ProductId.Equals(subscriptionProduct.OldProductId) && sp.SubscriptionId.Equals(subscriptionProduct.OldSubscriptionId));
+
+            var newSp = await db.SubscriptionProducts .CountAsync(
+                sp => sp.ProductId.Equals(subscriptionProduct.ProductId) && sp.SubscriptionId.Equals(subscriptionProduct.SubscriptionId));
+
+            return oldSp.Equals(1) && newSp.Equals(0);
+        }
+
+        public static async Task Change(this SubscriptionProduct subscriptionProduct, ApplicationDbContext db)
+        {
+            var oldSubscriptionProduct =
+                await db.SubscriptionProducts.FirstOrDefaultAsync(sp => sp.ProductId.Equals(subscriptionProduct.OldProductId) &&
+                                                                sp.SubscriptionId.Equals(subscriptionProduct.OldSubscriptionId));
+
+            var newSubscriptionProduct =
+                await db.SubscriptionProducts.FirstOrDefaultAsync(sp => sp.ProductId.Equals(subscriptionProduct.ProductId) &&
+                                                                sp.SubscriptionId.Equals(subscriptionProduct.SubscriptionId));
+
+            if (oldSubscriptionProduct != null && newSubscriptionProduct == null)
+            {
+                var subscriptionProductToCreate =
+                    new SubscriptionProduct() { SubscriptionId = subscriptionProduct.SubscriptionId, ProductId = subscriptionProduct.ProductId };
+
+                using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    try
+                    {
+                        db.SubscriptionProducts.Remove(oldSubscriptionProduct);
+                        db.SubscriptionProducts.Add(subscriptionProductToCreate);
+                        await db.SaveChangesAsync();
+                        transaction.Complete();
+                    }
+                    catch
+                    {
+                        transaction.Dispose();
+                    }
+                }
+            }
+        }
+
+
+        #endregion
     }
 }

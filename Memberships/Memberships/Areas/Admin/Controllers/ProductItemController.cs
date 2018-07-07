@@ -15,6 +15,7 @@ namespace Memberships.Areas.Admin.Controllers
     using Memberships.Areas.Admin.Extensions;
     using Memberships.Areas.Admin.Models;
 
+    [Authorize(Roles = "admin")]
     public class ProductItemController : Controller
     {
         private readonly ApplicationDbContext db = new ApplicationDbContext();
@@ -77,6 +78,7 @@ namespace Memberships.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             ProductItem productItem = await this.GetProductItem(itemId, productId);
             if (productItem == null)
             {

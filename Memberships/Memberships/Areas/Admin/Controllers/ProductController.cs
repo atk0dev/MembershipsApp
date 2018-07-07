@@ -15,6 +15,7 @@ namespace Memberships.Areas.Admin.Controllers
     using Memberships.Areas.Admin.Extensions;
     using Memberships.Areas.Admin.Models;
 
+    [Authorize(Roles = "admin")]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext db = new ApplicationDbContext();

@@ -24,6 +24,8 @@ namespace Memberships.Areas.Admin.Models
         public int? ProductId { get; set; }
 
         public int? SubscriptionId { get; set; }
+
+        public string UserId  { get; set; }
         
         public string ActionParameters {
             get
@@ -34,6 +36,7 @@ namespace Memberships.Areas.Admin.Models
                 this.AddStringParam(param, "itemId", this.ItemId);
                 this.AddStringParam(param, "productId", this.ProductId);
                 this.AddStringParam(param, "subscriptionId", this.SubscriptionId);
+                this.AddStringParam(param, "userid", this.UserId);
 
                 if (param.Length > 0)
                 {
@@ -47,6 +50,14 @@ namespace Memberships.Areas.Admin.Models
         private void AddStringParam(StringBuilder param, string name, int? value)
         {
             if (value != null && value > 0)
+            {
+                param.AppendFormat("{0}={1}&", name, value);
+            }
+        }
+
+        private void AddStringParam(StringBuilder param, string name, string value)
+        {
+            if (value != null && !value.Equals(string.Empty))
             {
                 param.AppendFormat("{0}={1}&", name, value);
             }

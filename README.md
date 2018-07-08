@@ -8,3 +8,6 @@ Add
 
 4. Add sqrs
 5. add clean arch
+
+
+replase "admin" with constant

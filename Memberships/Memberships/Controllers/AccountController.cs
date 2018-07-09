@@ -611,8 +611,9 @@ namespace Memberships.Controllers
                     this.AddErrors(result);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // ignored
             }
 
             return this.View(model);
@@ -679,8 +680,9 @@ namespace Memberships.Controllers
                     this.AddErrors(result);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // ignored
             }
 
             return this.View(model);
@@ -744,8 +746,9 @@ namespace Memberships.Controllers
                     await db.SaveChangesAsync();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // ignored
             }
 
             return this.RedirectToAction("Subscriptions", "Account", new { UserId = model.UserId });
@@ -771,8 +774,9 @@ namespace Memberships.Controllers
                     await db.SaveChangesAsync();
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
+                // ignored
             }
 
             return this.RedirectToAction("Subscriptions", "Account", new { UserId = userId });

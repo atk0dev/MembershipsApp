@@ -248,6 +248,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ContentViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ProductItemRow.cs" />
@@ -272,6 +273,7 @@
     <Content Include="Content\navbar.css" />
     <Content Include="Content\productcontent.css" />
     <Content Include="Content\thumbnails.css" />
+    <Content Include="Content\video-js.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -291,6 +293,10 @@
     <Content Include="Areas\Admin\Views\Section\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Section\Index.cshtml" />
     <Content Include="Scripts\carret.js" />
+    <Content Include="Scripts\video.min.js" />
+    <Content Include="Scripts\videojs.js" />
+    <Content Include="Scripts\Youtube.js" />
+    <Content Include="Scripts\Youtube.min.js" />
     <Content Include="Views\Shared\_BackToListButtonPartial.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_EditButtonPartial.cshtml" />
     <Content Include="Views\Shared\_CreateButtonPartial.cshtml" />
@@ -395,7 +401,9 @@
     <Content Include="Views\Account\Subscriptions.cshtml" />
     <Content Include="Views\Shared\_ThumbnailAreaPartial.cshtml" />
     <Content Include="Views\ProductContent\Index.cshtml" />
-    <Content Include="Views\ProductContent\ProductSectionPartial.cshtml" />
+    <Content Include="Views\ProductContent\_ProductSectionPartial.cshtml" />
+    <Content Include="Views\ProductContent\_ProductItemRowPartial.cshtml" />
+    <Content Include="Views\ProductContent\Content.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

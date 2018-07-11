@@ -1,0 +1,39 @@
+﻿@model Memberships.Models.ContentViewModel
+
+@{
+    ViewBag.Title = "Content";
+}
+
+<div class="pc-headline">
+    <h2>@Model.Title</h2>
+    <a class="btn btn-primary pull-right" href="/productcontent/index/@Model.ProductId">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Back
+    </a>
+</div>
+
+<div>
+    @Model.Description
+</div>
+
+@if (Model.Html != null)
+{
+    <div class="article">
+        @Html.Raw(Model.Html)
+    </div>
+}
+
+@if (Model.VideoUrl != null)
+{
+    <div id="hiddenUrl" hidden="hidden">@Model.VideoUrl</div>
+    <video id="video" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9" controls preload="auto"></video>
+}
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+            videoJS($("#hiddenUrl").text());
+        });
+    </script>
+}

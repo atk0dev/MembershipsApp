@@ -36,7 +36,8 @@ namespace Memberships
                 "~/Content/carret.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/ui").Include(
-                "~/Scripts/carret.js"));
+                "~/Scripts/carret.js",
+                "~/Scripts/videojs.js"));
         }
     }
 }

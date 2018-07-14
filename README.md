@@ -15,3 +15,5 @@ replase "admin" with constant
 update admin menu with white
 
 test video player with local files
+
+remove login with other auth providers

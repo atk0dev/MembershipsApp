@@ -222,25 +222,25 @@ namespace Memberships.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            if (this.ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                var user = await this.UserManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await this.UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
-                    return View("ForgotPasswordConfirmation");
+                    return this.View("ForgotPasswordConfirmation");
                 }
 
                 // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                string code = await this.UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = this.Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: this.Request.Url.Scheme);
+                await this.UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                return this.RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return this.View(model);
         }
 
         //
@@ -780,6 +780,72 @@ namespace Memberships.Controllers
             }
 
             return this.RedirectToAction("Subscriptions", "Account", new { UserId = userId });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RegisterUserAsync(RegisterUserModel model)
+        {
+            if (this.ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                           {
+                               UserName = model.Email,
+                               Email = model.Email,
+                               FirstName = model.Name,
+                               IsActive = true,
+                               Registered = DateTime.Now,
+                               EmailConfirmed = true
+                           };
+                var result = await this.UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await this.SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                    return this.PartialView("_RegisterUserPartial", model);
+                }
+
+                this.AddUserErrors(result);
+            }
+
+            return this.PartialView("_RegisterUserPartial", model);
+        }
+
+        private void AddUserErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error.StartsWith("Name") && error.EndsWith("is already taken."))
+                {
+                    continue;
+                }
+
+                this.ModelState.AddModelError("", error);
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> LoginAsync(LoginViewModel model, string returnUrl)
+        {
+            if (this.ModelState.IsValid)
+            {
+                var user = this.UserManager.Users.FirstOrDefault(
+                    u => u.Email.Equals(model.Email));
+                if (user != null && user.UserName.Length > 0)
+                {
+                    var result = await this.SignInManager.PasswordSignInAsync(
+                        user.UserName, model.Password, model.RememberMe,
+                        shouldLockout: false);
+                    if (result.Equals(SignInStatus.Success))
+                        return this.PartialView("_LoginPanelPartial", model);
+                }
+            }
+
+            this.ModelState.AddModelError("", "Invalid login attempt.");
+            return this.PartialView("_LoginPanelPartial", model);
         }
     }
 }

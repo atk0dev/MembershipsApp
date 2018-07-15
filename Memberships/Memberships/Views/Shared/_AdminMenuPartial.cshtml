@@ -1,5 +1,6 @@
-﻿
-@if (Request.IsAuthenticated && User.IsInRole("admin"))
+﻿@using Memberships.Constants
+
+@if (Request.IsAuthenticated && User.IsInRole(UserRoleValues.AdminRoleName))
 {
     <li class="dropdown" data-admin-menu>
         <a href="#">

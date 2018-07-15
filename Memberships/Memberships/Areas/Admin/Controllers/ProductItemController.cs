@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Memberships.Constants;
 using Memberships.Entities;
 using Memberships.Models;
 
@@ -15,7 +16,7 @@ namespace Memberships.Areas.Admin.Controllers
     using Memberships.Areas.Admin.Extensions;
     using Memberships.Areas.Admin.Models;
 
-    [Authorize(Roles = "admin")]
+    [Authorize(Roles = UserRoleValues.AdminRoleName)]
     public class ProductItemController : Controller
     {
         private readonly ApplicationDbContext db = new ApplicationDbContext();

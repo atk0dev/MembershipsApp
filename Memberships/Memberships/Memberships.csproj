@@ -222,6 +222,7 @@
     <Compile Include="Areas\Admin\Models\SmallButtonModel.cs" />
     <Compile Include="Comparers\ProductSectionEqualityComparer.cs" />
     <Compile Include="Comparers\ThumbnailEqualityComparer.cs" />
+    <Compile Include="Constants\UserRoleValues.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -276,8 +277,7 @@
     <Content Include="Content\carret.css" />
     <Content Include="Content\forgotpassword.css" />
     <Content Include="Content\login.css" />
-    <Content Include="Content\Logos\membership-icon-large.png" />
-    <Content Include="Content\Logos\membership-icon-small.png" />
+    <Content Include="Content\Logos\education.png" />
     <Content Include="Content\navbar.css" />
     <Content Include="Content\productcontent.css" />
     <Content Include="Content\registercode.css" />

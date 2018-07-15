@@ -18,7 +18,7 @@ namespace Memberships.Controllers
     using System.Data.Entity;
     using System.Net;
     using System.Web.Http.ModelBinding;
-
+    using Memberships.Constants;
     using Memberships.Entities;
     using Memberships.Extensions;
 
@@ -511,7 +511,7 @@ namespace Memberships.Controllers
             return this.View(users);
         }
 
-        [Authorize(Roles="admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public ActionResult Create()
         {
             return this.View();
@@ -519,7 +519,7 @@ namespace Memberships.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> Create(UserViewModel model)
         {
             if (this.ModelState.IsValid)
@@ -546,7 +546,7 @@ namespace Memberships.Controllers
             return this.View(model);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> Edit(string userId)
         {
             if (userId.IsNullOrWhiteSpace())
@@ -573,7 +573,7 @@ namespace Memberships.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> Edit(UserViewModel model)
         {
             if (model == null)
@@ -619,7 +619,7 @@ namespace Memberships.Controllers
             return this.View(model);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> Delete(string userId)
         {
             if (userId.IsNullOrWhiteSpace())
@@ -646,7 +646,7 @@ namespace Memberships.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> Delete(UserViewModel model)
         {
             if (model == null)
@@ -688,7 +688,7 @@ namespace Memberships.Controllers
             return this.View(model);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> Subscriptions(string userId)
         {
             if (userId.IsNullOrWhiteSpace())
@@ -721,7 +721,7 @@ namespace Memberships.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Subscriptions(UserSubscriptionViewModel model)
         {
@@ -754,7 +754,7 @@ namespace Memberships.Controllers
             return this.RedirectToAction("Subscriptions", "Account", new { UserId = model.UserId });
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = UserRoleValues.AdminRoleName)]
         public async Task<ActionResult> RemoveUserSubscription(string userId, int subscriptionId)
         {
             if (string.IsNullOrWhiteSpace(userId) || subscriptionId == 0)
